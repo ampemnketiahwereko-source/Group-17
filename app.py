@@ -29,21 +29,21 @@ tab_chat, tab_results = st.tabs(["Chatbot", "Project Results"])
 with tab_chat:
     if "messages" not in st.session_state:
         st.session_state.messages = []
-    for m in st.session_state.messages:
-        with st.chat_message(m["role"]):
-            st.write(m["content"])
-    if prompt := st.chat_input("Ask a customer support question..."):
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.write(prompt)
+
+    history = st.container()
+    prompt = st.chat_input("Ask a customer support question...")
+
+    if prompt:
         intent, answer = get_reply(prompt)
-        with st.chat_message("assistant"):
-            st.caption(f"Detected intent: {intent}")
-            st.write(answer)
+        st.session_state.messages.append({"role": "user", "content": prompt})
         st.session_state.messages.append(
             {"role": "assistant", "content": f"*Detected intent: {intent}*\n\n{answer}"}
         )
 
+    with history:
+        for m in st.session_state.messages:
+            with st.chat_message(m["role"]):
+                st.write(m["content"])
 with tab_results:
     st.header("EDA Dashboard")
     st.image("eda_dashboard.png")
